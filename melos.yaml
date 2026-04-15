@@ -1,0 +1,43 @@
+name: my_app
+
+# Modern Melos can automatically find packages if they are in the 'workspace'
+# section of your root pubspec, but keeping this list is fine too!
+packages:
+  - packages/core
+  - packages/ui
+  - packages/core_implementation
+  - packages/authentication/auth_domain
+  - packages/authentication/auth_data
+  - packages/authentication/auth_presentation
+
+
+command:
+  bootstrap:
+    # Essential for Windows to prevent file locking issues
+    runPubGetInParallel: false
+    usePubspecOverrides: true
+
+scripts:
+  get:
+    exec: flutter pub get
+    description: Get dependencies for all packages
+
+  analyze:
+    exec: flutter analyze
+    description: Analyze all packages
+
+  test:
+    exec: flutter test
+    description: Test all packages
+
+  clean:
+    exec: melos clean
+    description: Clean all packages
+
+  generate:
+    exec: dart run build_runner build --delete-conflicting-outputs
+    description: Run code generation
+
+  format:
+    exec: dart format .
+    description: Format all Dart files

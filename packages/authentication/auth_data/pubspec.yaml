@@ -1,0 +1,21 @@
+name: auth_data
+description: Authentication data layer — datasources, models, repository impl.
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  core:
+    path: ../../core
+  auth_domain:
+    path: ../auth_domain
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0

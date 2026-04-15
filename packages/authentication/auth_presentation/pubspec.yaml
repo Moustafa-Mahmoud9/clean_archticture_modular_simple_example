@@ -1,0 +1,25 @@
+name: auth_presentation
+description: Authentication UI — pages, cubits, widgets.
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  core:
+    path: ../../core
+  ui:
+    path: ../../ui
+  auth_domain:
+    path: ../auth_domain
+
+  flutter_bloc: ^9.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0

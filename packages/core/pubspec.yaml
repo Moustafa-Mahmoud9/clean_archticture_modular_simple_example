@@ -1,0 +1,15 @@
+name: core
+description: Pure Dart foundation — contracts and domain types.
+version: 1.0.0
+publish_to: 'none'
+resolution: workspace
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  dartz: ^0.10.1
+  equatable: ^2.0.5
+
+dev_dependencies:
+  lints: ^5.0.0   # not flutter_lints — plain Dart lints
