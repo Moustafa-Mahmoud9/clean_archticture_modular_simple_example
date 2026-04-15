@@ -4,19 +4,18 @@ import 'package:auth_presentation/pages/home_page.dart';
 import 'package:auth_presentation/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'app_bloc_observer.dart';
-// import 'app_routes.dart';
-// import 'app_theme.dart';
 import 'app_bloc_observer.dart';
 import 'app_routes.dart';
 import 'app_theme.dart';
 import 'injection_container.dart' as di;
+import 'package:core/core_package.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await di.initDependencies();
   Bloc.observer = AppBlocObserver();
+
   runApp(const MyApp());
 }
 
@@ -37,6 +36,15 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: AppRoutes.generateRoute,
         home: BlocBuilder<AuthCubit, AuthState>(
           builder: (context, state) {
+
+            final networkInfo = di.sl<NetworkInfo>();
+            networkInfo.onConnectivityChanged.listen((isConnected) {
+              if (!isConnected) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('You are offline!')),
+                );
+              }
+            });
             if (state is AuthLoading || state is AuthInitial)
             {
               return const Scaffold(

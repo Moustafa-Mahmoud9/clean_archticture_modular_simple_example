@@ -9,7 +9,6 @@ import 'package:core_implementation/core_implementation.dart';
 import 'package:auth_data/auth_data.dart';
 import 'package:auth_domain/auth_domain.dart';
 import 'package:auth_presentation/auth_presentation.dart';
-
 import 'location_service.dart';
 
 final sl = GetIt.instance;

@@ -1,4 +1,5 @@
 import 'package:auth_domain/auth_domain.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:core/core_package.dart';
 import 'auth_state.dart';

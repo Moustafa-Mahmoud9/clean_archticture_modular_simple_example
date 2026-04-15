@@ -46,7 +46,7 @@ class AuthEndpoints implements EndpointProvider {
     required String password,
   }) =>
       AuthEndpoints._(
-        path:   '/front-user/register',
+        path:'/front-user/register',
         method: HttpMethod.post,
         body: {
           'name':     name,
@@ -57,7 +57,7 @@ class AuthEndpoints implements EndpointProvider {
 
   factory AuthEndpoints.logout() =>
       const AuthEndpoints._(
-        path:   '/front-user/logout',
+        path:'/front-user/logout',
         method: HttpMethod.post,
       );
 
