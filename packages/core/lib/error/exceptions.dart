@@ -1,3 +1,5 @@
+import '../models/api_error_type.dart';
+
 /// Thrown when the remote server returns an error response (4xx / 5xx).
 class ServerException implements Exception {
   final String message;
@@ -9,7 +11,8 @@ class ServerException implements Exception {
   });
 
   @override
-  String toString() => 'ServerException(statusCode: $statusCode, message: $message)';
+  String toString() =>
+      'ServerException(statusCode: $statusCode, message: $message)';
 }
 
 /// Thrown when reading from or writing to local cache fails.
@@ -60,4 +63,40 @@ class ParseException implements Exception {
 
   @override
   String toString() => 'ParseException(message: $message)';
+}
+
+// ── ApiErrorType → typed Exception mapper ────────────────────────────────────
+
+/// Converts an [ApiErrorType] + message into the matching typed [Exception].
+///
+/// Used by datasources in the `failure` branch of `ApiResponse.when()`
+/// so each datasource doesn't repeat its own switch statement.
+///
+/// Usage:
+/// ```dart
+/// response.when(
+///   success: (data) => data,
+///   failure: (error, message) => throwApiException(error, message),
+/// );
+/// ```
+Never throwApiException(ApiErrorType error, String message) {
+  switch (error) {
+    case ApiErrorType.network:
+      throw NetworkException(message: message);
+    case ApiErrorType.timeout:
+      throw TimeoutException(message: message);
+    case ApiErrorType.unauthorized:
+    case ApiErrorType.forbidden:
+      throw UnauthorizedException(message: message);
+    case ApiErrorType.parse:
+      throw ParseException(message: message);
+    case ApiErrorType.cancelled:
+      throw NetworkException(message: message);
+    case ApiErrorType.ssl:
+      throw NetworkException(message: message);
+    case ApiErrorType.server:
+    case ApiErrorType.client:
+    case ApiErrorType.unknown:
+      throw ServerException(message: message, statusCode: 500);
+  }
 }

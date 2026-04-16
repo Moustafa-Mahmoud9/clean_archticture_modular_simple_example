@@ -1,4 +1,9 @@
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+
+import 'exceptions.dart';
+
+// ── Failure hierarchy ────────────────────────────────────────────────────────
 
 /// Base class for all domain-level failures.
 ///
@@ -12,6 +17,8 @@ abstract class Failure extends Equatable {
 
   @override
   List<Object?> get props => [message, statusCode];
+
+
 }
 
 /// The remote server returned an error (4xx / 5xx).
@@ -36,7 +43,8 @@ class TimeoutFailure extends Failure {
 
 /// The server returned 401 Unauthorized.
 class UnauthorizedFailure extends Failure {
-  const UnauthorizedFailure({required super.message}) : super(statusCode: 401);
+  const UnauthorizedFailure({required super.message})
+      : super(statusCode: 401);
 }
 
 /// The server returned 403 Forbidden.
@@ -47,4 +55,27 @@ class ForbiddenFailure extends Failure {
 /// The response body could not be parsed into the expected model.
 class ParseFailure extends Failure {
   const ParseFailure({required super.message}) : super(statusCode: null);
+}
+
+Future<Either<Failure, T>> guardedApiCall<T>(
+    Future<T> Function() action,
+    ) async
+{
+  try {
+    return Right(await action());
+  } on NetworkException catch (e) {
+    return Left(NetworkFailure(message: e.message));
+  } on TimeoutException catch (e) {
+    return Left(TimeoutFailure(message: e.message));
+  } on UnauthorizedException catch (e) {
+    return Left(UnauthorizedFailure(message: e.message));
+  } on ParseException catch (e) {
+    return Left(ParseFailure(message: e.message));
+  } on CacheException catch (e) {
+    return Left(CacheFailure(message: e.message));
+  } on ServerException catch (e) {
+    return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+  } catch (e) {
+    return Left(ServerFailure(message: e.toString()));
+  }
 }

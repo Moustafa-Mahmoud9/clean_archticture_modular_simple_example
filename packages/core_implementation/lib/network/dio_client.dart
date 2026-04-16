@@ -140,7 +140,8 @@ class DioClient extends ApiClient {
         ApiCancelToken? cancelToken,
         ApiProgressCallback? onSendProgress,
         ApiProgressCallback? onReceiveProgress,
-      }) async {
+      }) async
+  {
     try {
       final resolvedPath = endpointProvider?.path ?? path;
       final resolvedBody = endpointProvider?.body;
