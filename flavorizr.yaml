@@ -1,28 +1,38 @@
 app:
   android:
-    flavorDimensions: "env"
+    flavorDimensions: "flavor-type"
 
 flavors:
   development:
     app:
       name: "MyApp Dev"
     android:
-      applicationId: "com.example.example_app_modular"
+      applicationId: "com.example.myapp.dev"
+    ios:
+      bundleId: "com.example.myapp.dev"
 
   staging:
     app:
       name: "MyApp Staging"
     android:
-      applicationId: "com.example.example_app_modular"
+      applicationId: "com.example.myapp.staging"
+    ios:
+      bundleId: "com.example.myapp.staging"
 
   production:
     app:
       name: "MyApp"
     android:
-      applicationId: "com.example.example_app_modular"
+      applicationId: "com.example.myapp"
+    ios:
+      bundleId: "com.example.myapp"
 
 instructions:
-  - android:androidManifest
-  - android:buildGradle
-  - android:dummyAssets
-  - android:icons
+  - ios:podfile
+  - ios:xcconfig
+  - ios:buildTargets
+  - ios:schema
+  - ios:plist
+  - ios:launchScreen
+  - ios:dummyAssets
+  - ios:icons
