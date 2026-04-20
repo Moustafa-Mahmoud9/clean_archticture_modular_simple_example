@@ -1,5 +1,4 @@
-import 'package:core/core_package.dart';
-import 'package:dartz/dartz.dart';
+import 'package:core_implementation/core_implementation.dart';
 
 abstract class UseCase<Type, Params> {
   Future<Either<Failure, Type>> call(Params params);

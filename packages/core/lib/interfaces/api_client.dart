@@ -14,7 +14,7 @@ abstract class ApiClient {
   Future<ApiResponse<T>> request<T>(
       String path, {
         required HttpMethod method,
-        EndpointProvider? endpointProvider,  // ← nullable
+        EndpointProvider? endpointProvider,
         T Function(dynamic json)? fromJson,
         ApiCancelToken? cancelToken,
         ApiProgressCallback? onSendProgress,

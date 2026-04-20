@@ -10,7 +10,8 @@ environment:
 dependencies:
   core:
     path: ../../core
-
+  core_implementation:
+    path: ../../core_implementation
 dev_dependencies:
   lints: ^5.0.0
   test: ^1.24.0

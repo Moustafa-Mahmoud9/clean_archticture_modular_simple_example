@@ -1,4 +1,5 @@
-import '../models/api_error_type.dart';
+import 'package:core/models/api_error_type.dart';
+
 
 /// Thrown when the remote server returns an error response (4xx / 5xx).
 class ServerException implements Exception {

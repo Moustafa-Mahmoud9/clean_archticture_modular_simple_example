@@ -19,8 +19,8 @@ class DevelopmentEnvironment extends ApiEnvironment {
     super.sendTimeout    = const Duration(seconds: 60),
     super.headers        = const {},
   }) : super(
-    enableLogger:          true,
-    certificateAssetPath:  null, // no SSL pinning in dev
+    enableLogger:true,
+    certificateAssetPath:null,
   );
 }
 

@@ -17,11 +17,5 @@ export 'interfaces/endpoint_provider.dart';
 export 'interfaces/network_info.dart';
 export 'interfaces/token_provider.dart';
 // error
-export 'error/exceptions.dart';
-export 'error/failures.dart';
-// usecases
-export 'usecases/usecase.dart';
-export 'typedef.dart';
 
-export 'package:dartz/dartz.dart';
-export 'package:equatable/equatable.dart';
+

@@ -16,7 +16,8 @@ dependencies:
     path: ../../ui
   auth_domain:
     path: ../auth_domain
-
+  core_implementation:
+    path: ../../core_implementation
   flutter_bloc: ^9.1.1
 
 dev_dependencies:

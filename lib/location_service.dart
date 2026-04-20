@@ -1,44 +1,50 @@
-// lib/services/location_service.dart
-
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
   Position? _lastKnownPosition;
+  Future<void>? _initFuture; // ensures initialize() runs only once
 
-  /// Fire this without await in initDependencies().
-  /// It runs in the background and caches the position when ready.
-  Future<void> initialize() async {
-    LocationPermission permission = await Geolocator.checkPermission();
+  /// Idempotent — safe to call multiple times. The actual init runs once.
+  Future<void> initialize() {
+    return _initFuture ??= _doInitialize();
+  }
 
-    // Request if denied — reassign so we use the updated status below
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) return;
-    }
-
-    // Cannot request again — user must go to device settings
-    if (permission == LocationPermission.deniedForever) return;
-
-    // GPS hardware might be toggled off even if permission is granted
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return;
-
+  Future<void> _doInitialize() async {
     try {
-      // Low accuracy = faster fix at startup
-      _lastKnownPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.low,
-      ).timeout(const Duration(seconds: 5));
-    } catch (_) {
-      // Timeout or error — fall back to last known position from device
-      _lastKnownPosition = await Geolocator.getLastKnownPosition();
+      LocationPermission permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return;
+      }
+
+      if (permission == LocationPermission.deniedForever) return;
+
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+
+      try {
+        _lastKnownPosition = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low,
+        ).timeout(const Duration(seconds: 5));
+      } catch (_) {
+        _lastKnownPosition = await Geolocator.getLastKnownPosition();
+      }
+    } catch (e) {
+      // Catches MissingPluginException and any other plugin/platform errors
+      // so they never bubble up and crash app startup.
+      // ignore: avoid_print
+      print('LocationService init failed: $e');
     }
   }
 
   /// Returns null safely if location is not yet available or was denied.
+  /// Triggers initialization on first call if it hasn't happened yet.
   Future<Map<String, double>?> getLocation() async {
+    await initialize(); // safe — runs once, returns cached future after that
     if (_lastKnownPosition == null) return null;
     return {
-      'latitude':  _lastKnownPosition!.latitude,
+      'latitude': _lastKnownPosition!.latitude,
       'longitude': _lastKnownPosition!.longitude,
     };
   }

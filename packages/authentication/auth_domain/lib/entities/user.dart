@@ -1,6 +1,5 @@
 import 'dart:convert';
-
-import 'package:core/core_package.dart';
+import 'package:core_implementation/core_implementation.dart';
 /// Top-level login API response — wraps status, message, data, and errors.
 class LoginResponseEntity {
   final bool? status;

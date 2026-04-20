@@ -11,6 +11,18 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+# ── Environment files (secrets, never commit) ──────────────────────────
+.env
+.env.development
+.env.staging
+.env.production
+# Commit the template so teammates know what keys exist
+!.env.example
+
+# ── Envied generated outputs ───────────────────────────────────────────
+lib/config/app_env_development.g.dart
+lib/config/app_env_staging.g.dart
+lib/config/app_env_production.g.dart
 
 # IntelliJ related
 *.iml

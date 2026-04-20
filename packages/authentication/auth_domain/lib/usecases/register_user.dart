@@ -1,5 +1,4 @@
-import 'package:core/core_package.dart';
-
+import 'package:core_implementation/core_implementation.dart';
 import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
 

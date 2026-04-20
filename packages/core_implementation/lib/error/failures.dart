@@ -1,7 +1,4 @@
-import 'package:dartz/dartz.dart';
-import 'package:equatable/equatable.dart';
-
-import 'exceptions.dart';
+import 'package:core_implementation/core_implementation.dart';
 
 // ── Failure hierarchy ────────────────────────────────────────────────────────
 

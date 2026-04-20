@@ -1,5 +1,4 @@
-import 'package:core/core_package.dart';
-import 'package:dartz/dartz.dart';
+import 'package:core_implementation/core_implementation.dart';
 
 
 /// Shorthand for the standard async Either return type used in repositories and use cases.

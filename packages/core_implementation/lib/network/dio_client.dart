@@ -52,7 +52,7 @@ class DioClient extends ApiClient {
   }) {
     _dio = Dio(
       BaseOptions(
-        baseUrl: environment.baseUrl,
+        baseUrl:environment.baseUrl,
         connectTimeout: environment.connectTimeout,
         receiveTimeout: environment.receiveTimeout,
         sendTimeout: environment.sendTimeout,

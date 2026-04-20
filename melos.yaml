@@ -34,10 +34,12 @@ scripts:
     exec: melos clean
     description: Clean all packages
 
-  generate:
-    exec: dart run build_runner build --delete-conflicting-outputs
-    description: Run code generation
-
   format:
     exec: dart format .
     description: Format all Dart files
+
+  generate:
+    description: Run code generation where applicable
+    exec: dart run build_runner build --delete-conflicting-outputs
+    packageFilters:
+      dependsOn: build_runner

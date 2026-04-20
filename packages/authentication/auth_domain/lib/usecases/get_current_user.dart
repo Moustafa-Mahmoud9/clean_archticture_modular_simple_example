@@ -1,8 +1,6 @@
-import 'package:core/core_package.dart';
-import 'package:core/error/failures.dart';
 import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
-
+import 'package:core_implementation/core_implementation.dart';
 class GetCurrentUser implements UseCase<LoginResponseEntity, NoParams> {
   final AuthRepository repository;
 

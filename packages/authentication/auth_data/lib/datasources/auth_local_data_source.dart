@@ -1,25 +1,31 @@
 import 'dart:convert';
-import 'package:core/core_package.dart';
+
+import 'package:core_implementation/core_implementation.dart';
+
 import '../models/user_model.dart';
 import 'app_token_provider.dart';
-import 'package:core_implementation/core_implementation.dart';
+
 abstract class AuthLocalDataSource {
   Future<void> cacheUser(LoginModel user);
+
   Future<LoginModel> getCachedUser();
+
   Future<void> cacheToken(String token);
+
   Future<String?> getCachedToken();
+
   Future<void> clearCache();
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
-  final StorageService _storage;           // ← was SecureStorageService
+  final StorageService _storage; // ← was SecureStorageService
   final AppTokenProvider _tokenProvider;
 
   AuthLocalDataSourceImpl({
-    required StorageService storage,       // ← was SecureStorageService
+    required StorageService storage, // ← was SecureStorageService
     required AppTokenProvider tokenProvider,
-  })  : _storage = storage,
-        _tokenProvider = tokenProvider;
+  }) : _storage = storage,
+       _tokenProvider = tokenProvider;
 
   // ── User caching ────────────────────────────────────────────────────────────
 

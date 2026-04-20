@@ -14,6 +14,8 @@ dependencies:
     path: ../../core
   auth_domain:
     path: ../auth_domain
+  core_implementation:
+    path: ../../core_implementation
 
 dev_dependencies:
   flutter_test:

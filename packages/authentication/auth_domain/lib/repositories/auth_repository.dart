@@ -1,6 +1,5 @@
-import 'package:core/core_package.dart';
 import '../entities/user.dart';
-
+import 'package:core_implementation/core_implementation.dart';
 abstract class AuthRepository {
   ResultFuture<LoginResponseEntity> login({
     required String email,
