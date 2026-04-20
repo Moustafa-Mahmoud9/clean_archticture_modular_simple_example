@@ -1,0 +1,28 @@
+app:
+  android:
+    flavorDimensions: "env"
+
+flavors:
+  development:
+    app:
+      name: "MyApp Dev"
+    android:
+      applicationId: "com.example.example_app_modular"
+
+  staging:
+    app:
+      name: "MyApp Staging"
+    android:
+      applicationId: "com.example.example_app_modular"
+
+  production:
+    app:
+      name: "MyApp"
+    android:
+      applicationId: "com.example.example_app_modular"
+
+instructions:
+  - android:androidManifest
+  - android:buildGradle
+  - android:dummyAssets
+  - android:icons

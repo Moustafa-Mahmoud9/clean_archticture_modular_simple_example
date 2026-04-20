@@ -7,32 +7,24 @@ import 'common_text_button.dart';
 
 /// A generic bottom-sheet selection dialog.
 ///
-/// ### What's new vs the original
-/// - [topImage] — optional illustration above the header, matching the update
-///   dialog style (image 2). When provided it sits above the coloured header.
-/// - [textButtonLabel] / [onTextButtonTap] — optional text link below the
-///   add-button, matching the "هل نسيت كلمه المرور؟" pattern (image 1).
-/// - [addButtonLabel] / [onAddTap] — unchanged, still renders a [CommonButton].
-/// - Everything else is unchanged from the original.
+/// Use one of the named factory constructors:
+/// [SelectionAlertDialog.options] — plain radio-style picker (image 7).
+/// [SelectionAlertDialog.withProfile] — profile-aware list with avatars.
 class SelectionAlertDialog<T> extends StatefulWidget {
-  const SelectionAlertDialog({
+  const SelectionAlertDialog._({
     super.key,
     required this.headerTitle,
     required this.items,
     required this.selectedItem,
     required this.labelBuilder,
-    // ── Top visual ────────────────────────────────────────────────────────
     this.topImage,
     this.topImageHeight = 180.0,
-    // ── Header ────────────────────────────────────────────────────────────
     this.showProfile = false,
     this.avatarBuilder,
     this.headerLeading,
     this.headerSubtitle,
-    // ── Add button (optional) ─────────────────────────────────────────────
     this.addButtonLabel,
     this.onAddTap,
-    // ── Text button below add button (optional) ───────────────────────────
     this.textButtonLabel,
     this.onTextButtonTap,
     this.textButtonUnderlined = false,
@@ -42,27 +34,101 @@ class SelectionAlertDialog<T> extends StatefulWidget {
   'Provide avatarBuilder when showProfile is true',
   );
 
-  // Top visual
+  // ── Named factory constructors ─────────────────────────────────────────
+
+  /// Plain picker (image 7) — header, radio list, primary "apply" button.
+  /// No avatars, no profile row. For language pickers, sort pickers, etc.
+  factory SelectionAlertDialog.options({
+    Key? key,
+    required String headerTitle,
+    required List<T> items,
+    required T? selectedItem,
+    required String Function(T item) labelBuilder,
+    String? applyButtonLabel,
+    VoidCallback? onApplyTap,
+  }) =>
+      SelectionAlertDialog._(
+        key: key,
+        headerTitle: headerTitle,
+        items: items,
+        selectedItem: selectedItem,
+        labelBuilder: labelBuilder,
+        addButtonLabel: applyButtonLabel,
+        onAddTap: onApplyTap,
+      );
+
+  /// Profile-aware picker — shows an avatar per row and a header that
+  /// renders a profile widget alongside the title. For account/tenant
+  /// switching, user selection within a family account, etc.
+  factory SelectionAlertDialog.withProfile({
+    Key? key,
+    required String headerTitle,
+    required List<T> items,
+    required T? selectedItem,
+    required String Function(T item) labelBuilder,
+    required Widget Function(T item) avatarBuilder,
+    Widget? headerLeading,
+    String? headerSubtitle,
+    String? addButtonLabel,
+    VoidCallback? onAddTap,
+    String? textButtonLabel,
+    VoidCallback? onTextButtonTap,
+  }) =>
+      SelectionAlertDialog._(
+        key: key,
+        headerTitle: headerTitle,
+        items: items,
+        selectedItem: selectedItem,
+        labelBuilder: labelBuilder,
+        showProfile: true,
+        avatarBuilder: avatarBuilder,
+        headerLeading: headerLeading,
+        headerSubtitle: headerSubtitle,
+        addButtonLabel: addButtonLabel,
+        onAddTap: onAddTap,
+        textButtonLabel: textButtonLabel,
+        onTextButtonTap: onTextButtonTap,
+      );
+
+  /// Picker with an illustration at the top (matches the update-dialog
+  /// visual style from image 5 but with a selection list underneath).
+  factory SelectionAlertDialog.withIllustration({
+    Key? key,
+    required String headerTitle,
+    required List<T> items,
+    required T? selectedItem,
+    required String Function(T item) labelBuilder,
+    required ImageProvider illustration,
+    double illustrationHeight = 180.0,
+    String? applyButtonLabel,
+    VoidCallback? onApplyTap,
+  }) =>
+      SelectionAlertDialog._(
+        key: key,
+        headerTitle: headerTitle,
+        items: items,
+        selectedItem: selectedItem,
+        labelBuilder: labelBuilder,
+        topImage: illustration,
+        topImageHeight: illustrationHeight,
+        addButtonLabel: applyButtonLabel,
+        onAddTap: onApplyTap,
+      );
+
+  // ── Fields ─────────────────────────────────────────────────────────────
+
   final ImageProvider? topImage;
   final double topImageHeight;
-
-  // Header
   final String headerTitle;
   final bool showProfile;
   final Widget Function(T item)? avatarBuilder;
   final Widget? headerLeading;
   final String? headerSubtitle;
-
-  // List
   final List<T> items;
   final T? selectedItem;
   final String Function(T item) labelBuilder;
-
-  // Add button
   final String? addButtonLabel;
   final VoidCallback? onAddTap;
-
-  // Text button
   final String? textButtonLabel;
   final VoidCallback? onTextButtonTap;
   final bool textButtonUnderlined;
@@ -96,7 +162,6 @@ class _SelectionAlertDialogState<T> extends State<SelectionAlertDialog<T>> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ── Drag handle ────────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.only(top: 10, bottom: 4),
             child: Container(
@@ -108,8 +173,6 @@ class _SelectionAlertDialogState<T> extends State<SelectionAlertDialog<T>> {
               ),
             ),
           ),
-
-          // ── Optional top image ─────────────────────────────────────────
           if (hasTopImage)
             Image(
               image: widget.topImage!,
@@ -117,8 +180,6 @@ class _SelectionAlertDialogState<T> extends State<SelectionAlertDialog<T>> {
               height: widget.topImageHeight,
               fit: BoxFit.cover,
             ),
-
-          // ── Coloured header ────────────────────────────────────────────
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -159,8 +220,6 @@ class _SelectionAlertDialogState<T> extends State<SelectionAlertDialog<T>> {
               textAlign: TextAlign.center,
             ),
           ),
-
-          // ── Items list ─────────────────────────────────────────────────
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -186,23 +245,21 @@ class _SelectionAlertDialogState<T> extends State<SelectionAlertDialog<T>> {
               );
             },
           ),
-
-          // ── Add button ─────────────────────────────────────────────────
           if (hasAddButton)
             Padding(
-              padding: EdgeInsets.fromLTRB(12, 4, 12, hasTextButton ? 8 : 12),
+              padding:
+              EdgeInsets.fromLTRB(12, 4, 12, hasTextButton ? 8 : 12),
               child: CommonButton2(
                 onTap: widget.onAddTap,
                 leadingIcon: Icons.add,
                 label: Text(
                   widget.addButtonLabel!,
-                  style:
-                  context.textStyleRegular().copyWith(color: Colors.white),
+                  style: context
+                      .textStyleRegular()
+                      .copyWith(color: Colors.white),
                 ),
               ),
             ),
-
-          // ── Text button ────────────────────────────────────────────────
           if (hasTextButton)
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
@@ -216,16 +273,12 @@ class _SelectionAlertDialogState<T> extends State<SelectionAlertDialog<T>> {
                 ),
               ),
             ),
-
           SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
         ],
       ),
     );
   }
 }
-
-// ── Private item widget ──────────────────────────────────────────────────────
-// Unchanged from original.
 
 class _SelectionItem<T> extends StatelessWidget {
   const _SelectionItem({
@@ -277,9 +330,8 @@ class _SelectionItem<T> extends StatelessWidget {
                       : Colors.grey.shade400,
                   width: 1.5,
                 ),
-                color: isSelected
-                    ? AppColors.primaryColor
-                    : Colors.transparent,
+                color:
+                isSelected ? AppColors.primaryColor : Colors.transparent,
               ),
               child: isSelected
                   ? const Icon(Icons.check, size: 13, color: Colors.white)
@@ -290,9 +342,8 @@ class _SelectionItem<T> extends StatelessWidget {
               child: Text(
                 label,
                 style: context.textStyleRegular().copyWith(
-                  fontWeight: isSelected
-                      ? FontWeight.w600
-                      : FontWeight.normal,
+                  fontWeight:
+                  isSelected ? FontWeight.w600 : FontWeight.normal,
                   color: isSelected
                       ? AppColors.primaryColor
                       : Colors.black87,

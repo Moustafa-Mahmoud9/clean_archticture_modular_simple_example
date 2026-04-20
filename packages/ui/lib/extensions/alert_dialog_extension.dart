@@ -4,116 +4,223 @@ import '../widgets/confirm_alert_dialog.dart';
 import '../widgets/selectionAlertDialog.dart';
 
 extension AlertDialogExtension on BuildContext {
-  Future<T?> showSelectionDialog<T>({
+  // ── Confirm dialogs ─────────────────────────────────────────────────────
+
+  Future<void> showWarningDialog({
+    required String title,
+    required String body,
+    required String confirmLabel,
+    required VoidCallback onConfirm,
+    IconData confirmIcon = Icons.arrow_back,
+    String? textButtonLabel,
+    VoidCallback? onTextButton,
+  }) =>
+      showDialog<void>(
+        context: this,
+        barrierDismissible: true,
+        builder: (_) => Directionality(
+          textDirection: TextDirection.rtl,
+          child: ConfirmAlertDialog.warning(
+            title: title,
+            body: body,
+            confirmLabel: confirmLabel,
+            onConfirm: onConfirm,
+            confirmIcon: confirmIcon,
+            textButtonLabel: textButtonLabel,
+            onTextButton: onTextButton,
+          ),
+        ),
+      );
+
+  Future<void> showErrorDialog({
+    required String title,
+    required String body,
+    required String confirmLabel,
+    required VoidCallback onConfirm,
+  }) =>
+      showDialog<void>(
+        context: this,
+        builder: (_) => Directionality(
+          textDirection: TextDirection.rtl,
+          child: ConfirmAlertDialog.error(
+            title: title,
+            body: body,
+            confirmLabel: confirmLabel,
+            onConfirm: onConfirm,
+          ),
+        ),
+      );
+
+  Future<void> showSuccessDialog({
+    required String title,
+    required String body,
+    required String confirmLabel,
+    required VoidCallback onConfirm,
+  }) =>
+      showDialog<void>(
+        context: this,
+        builder: (_) => Directionality(
+          textDirection: TextDirection.rtl,
+          child: ConfirmAlertDialog.success(
+            title: title,
+            body: body,
+            confirmLabel: confirmLabel,
+            onConfirm: onConfirm,
+          ),
+        ),
+      );
+
+  Future<void> showChoiceDialog({
+    required String title,
+    required String body,
+    required String confirmLabel,
+    required String cancelLabel,
+    required VoidCallback onConfirm,
+    required VoidCallback onCancel,
+  }) =>
+      showDialog<void>(
+        context: this,
+        builder: (_) => Directionality(
+          textDirection: TextDirection.rtl,
+          child: ConfirmAlertDialog.choice(
+            title: title,
+            body: body,
+            confirmLabel: confirmLabel,
+            cancelLabel: cancelLabel,
+            onConfirm: onConfirm,
+            onCancel: onCancel,
+          ),
+        ),
+      );
+
+  Future<void> showDestructiveDialog({
+    required String title,
+    required String body,
+    required String confirmLabel,
+    required String cancelLabel,
+    required VoidCallback onConfirm,
+    required VoidCallback onCancel,
+  }) =>
+      showDialog<void>(
+        context: this,
+        builder: (_) => Directionality(
+          textDirection: TextDirection.rtl,
+          child: ConfirmAlertDialog.destructive(
+            title: title,
+            body: body,
+            confirmLabel: confirmLabel,
+            cancelLabel: cancelLabel,
+            onConfirm: onConfirm,
+            onCancel: onCancel,
+          ),
+        ),
+      );
+
+  Future<void> showUpdateDialog({
+    required String title,
+    required String body,
+    required ImageProvider illustration,
+    required String updateLabel,
+    required VoidCallback onUpdate,
+    VoidCallback? onLater,
+    String laterLabel = 'لاحقًا',
+  }) =>
+      showDialog<void>(
+        context: this,
+        barrierDismissible: onLater != null,
+        builder: (_) => Directionality(
+          textDirection: TextDirection.rtl,
+          child: ConfirmAlertDialog.update(
+            title: title,
+            body: body,
+            illustration: illustration,
+            updateLabel: updateLabel,
+            onUpdate: onUpdate,
+            onLater: onLater,
+            laterLabel: laterLabel,
+          ),
+        ),
+      );
+
+  Future<void> showBiometricDialog({
+    required String title,
+    required VoidCallback onCancel,
+    String cancelLabel = 'إلغاء',
+    IconData icon = Icons.fingerprint,
+  }) =>
+      showDialog<void>(
+        context: this,
+        barrierDismissible: false,
+        builder: (_) => Directionality(
+          textDirection: TextDirection.rtl,
+          child: ConfirmAlertDialog.biometric(
+            title: title,
+            onCancel: onCancel,
+            cancelLabel: cancelLabel,
+            icon: icon,
+          ),
+        ),
+      );
+
+  // ── Selection dialogs ───────────────────────────────────────────────────
+
+  Future<T?> showOptionsPicker<T>({
     required String headerTitle,
     required List<T> items,
     required T? selectedItem,
     required String Function(T item) labelBuilder,
-    // ── Top visual ────────────────────────────────────────────────────────
-    ImageProvider? topImage,
-    double topImageHeight = 180.0,
-    // ── Header ────────────────────────────────────────────────────────────
-    bool showProfile = false,
-    Widget Function(T item)? avatarBuilder,
+    String? applyButtonLabel,
+    VoidCallback? onApplyTap,
+  }) =>
+      showModalBottomSheet<T>(
+        context: this,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => Directionality(
+          textDirection: TextDirection.rtl,
+          child: SelectionAlertDialog<T>.options(
+            headerTitle: headerTitle,
+            items: items,
+            selectedItem: selectedItem,
+            labelBuilder: labelBuilder,
+            applyButtonLabel: applyButtonLabel,
+            onApplyTap: onApplyTap,
+          ),
+        ),
+      );
+
+  Future<T?> showProfilePicker<T>({
+    required String headerTitle,
+    required List<T> items,
+    required T? selectedItem,
+    required String Function(T item) labelBuilder,
+    required Widget Function(T item) avatarBuilder,
     Widget? headerLeading,
     String? headerSubtitle,
-    // ── Add button ────────────────────────────────────────────────────────
     String? addButtonLabel,
     VoidCallback? onAddTap,
-    // ── Text button ───────────────────────────────────────────────────────
     String? textButtonLabel,
     VoidCallback? onTextButtonTap,
-    bool textButtonUnderlined = false,
-    Color? textButtonColor,
-  }) {
-    return showModalBottomSheet<T>(
-      context: this,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => SelectionAlertDialog<T>(
-        headerTitle: headerTitle,
-        items: items,
-        selectedItem: selectedItem,
-        labelBuilder: labelBuilder,
-        topImage: topImage,
-        topImageHeight: topImageHeight,
-        showProfile: showProfile,
-        avatarBuilder: avatarBuilder,
-        headerLeading: headerLeading,
-        headerSubtitle: headerSubtitle,
-        addButtonLabel: addButtonLabel,
-        onAddTap: onAddTap,
-        textButtonLabel: textButtonLabel,
-        onTextButtonTap: onTextButtonTap,
-        textButtonUnderlined: textButtonUnderlined,
-        textButtonColor: textButtonColor,
-      ),
-    );
-  }
-
-  Future<void> showConfirmDialog({
-    required String title,
-    required String body,
-    required String confirmLabel,
-    required VoidCallback onTapFirstButton,
-    // ── Top visual (pick one) ──────────────────────────────────────────────
-    IconData? topIcon,
-    Color? topIconColor,
-    double topIconSize = 48.0,
-    ImageProvider? topImage,
-    double topImageHeight = 180.0,
-    // ── Primary button ────────────────────────────────────────────────────
-    IconData? confirmIcon,
-    bool isDangerous = false,
-    Color? iconColor,
-    // ── Second button ─────────────────────────────────────────────────────
-    bool showSecondButton = false,
-    String? cancelLabel,
-    VoidCallback? onTapSecondButton,
-    // ── Text button ───────────────────────────────────────────────────────
-    String? textButtonLabel,
-    VoidCallback? onTapTextButton,
-    bool textButtonUnderlined = false,
-    Color? textButtonColor,
-    Color? secondButtonColor,
-    Color? firstButtonColor,
-    // ── Dismiss ───────────────────────────────────────────────────────────
-    bool canDismiss = true,
-    final TextStyle? bodyStyle,
-    final TextStyle? titleStyle,
-  }) {
-    return showDialog<void>(
-      context: this,
-      barrierDismissible: canDismiss,
-      builder: (_) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: ConfirmAlertDialog(
-          title: title,
-          body: body,
-          confirmLabel: confirmLabel,
-          onTapFirstButton: onTapFirstButton,
-          topIcon: topIcon,
-          topIconColor: topIconColor,
-          topIconSize: topIconSize,
-          topImage: topImage,
-          topImageHeight: topImageHeight,
-          confirmIcon: confirmIcon,
-          isDangerous: isDangerous,
-          iconColor: iconColor,
-          showSecondButton: showSecondButton,
-          cancelLabel: cancelLabel,
-          onTapSecondButton: onTapSecondButton,
-          textButtonLabel: textButtonLabel,
-          onTapTextButton: onTapTextButton,
-          textButtonUnderlined: textButtonUnderlined,
-          textButtonColor: textButtonColor,
-          canDismiss: canDismiss,
-          bodyStyle: bodyStyle,
-          titleStyle: titleStyle,
-          secondButtonColor:secondButtonColor,
-          firstButtonColor:firstButtonColor,
+  }) =>
+      showModalBottomSheet<T>(
+        context: this,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => Directionality(
+          textDirection: TextDirection.rtl,
+          child: SelectionAlertDialog<T>.withProfile(
+            headerTitle: headerTitle,
+            items: items,
+            selectedItem: selectedItem,
+            labelBuilder: labelBuilder,
+            avatarBuilder: avatarBuilder,
+            headerLeading: headerLeading,
+            headerSubtitle: headerSubtitle,
+            addButtonLabel: addButtonLabel,
+            onAddTap: onAddTap,
+            textButtonLabel: textButtonLabel,
+            onTextButtonTap: onTextButtonTap,
+          ),
         ),
-      ),
-    );
-  }
+      );
 }

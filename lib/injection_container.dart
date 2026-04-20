@@ -1,14 +1,16 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
-import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 
-import 'package:core/core_package.dart';
-import 'package:core_implementation/core_implementation.dart';
 import 'package:auth_data/auth_data.dart';
 import 'package:auth_domain/auth_domain.dart';
 import 'package:auth_presentation/auth_presentation.dart';
+import 'package:core/core_package.dart';
+import 'package:core_implementation/core_implementation.dart';
+import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
+
+import 'config/app_env.dart';
+import 'config/flavor_config.dart';
 import 'location_service.dart';
 
 final sl = GetIt.instance;
@@ -16,12 +18,12 @@ final sl = GetIt.instance;
 Future<void> initDependencies() async {
   // 1. Storage
   sl.registerLazySingleton<StorageService>(
-        () => SecureStorageService.defaultInstance(),
+    () => SecureStorageService.defaultInstance(),
   );
 
   // 2. Network connectivity
   sl.registerLazySingleton<NetworkInfo>(
-        () => NetworkInfoImpl.defaultInstance(),
+    () => NetworkInfoImpl.defaultInstance(),
   );
 
   // 3. Location — fire-and-forget
@@ -29,26 +31,37 @@ Future<void> initDependencies() async {
   sl<LocationService>().initialize();
 
   // 4. Environment — build-mode switched
-  sl.registerLazySingleton<ApiEnvironment>(
-        () => kDebugMode
-        ? DevelopmentEnvironment(
-      baseUrl: 'https://lawyer-kw.com/egyconsjed/api',
-      headers: const {'Accept-Language': 'ar'},
-    )
-        : ProductionEnvironment(
-      baseUrl: 'https://lawyer-kw.com/egyconsjed/api',
-      headers: const {'Accept-Language': 'ar'},
-    ),
-  );
 
-// 5. Token provider — registered under both types so AuthLocalDataSource
-//    can reach saveAccessToken() while DioClient only sees TokenProvider.
+  sl.registerLazySingleton<ApiEnvironment>(() {
+    final commonHeaders = {'Accept-Language': 'ar'};
+
+    switch (FlavorSetup.current) {
+      case AppFlavor.development:
+        return DevelopmentEnvironment(
+          baseUrl: AppEnv.baseUrl,
+          headers: commonHeaders,
+        );
+
+      case AppFlavor.staging:
+        return StagingEnvironment(
+          baseUrl: AppEnv.baseUrl,
+          headers: commonHeaders,
+        );
+
+      case AppFlavor.production:
+        return ProductionEnvironment(
+          baseUrl: AppEnv.baseUrl,
+          headers: commonHeaders,
+        );
+    }
+  });
+
+  // 5. Token provider — registered under both types so AuthLocalDataSource
+  //    can reach saveAccessToken() while DioClient only sees TokenProvider.
   sl.registerLazySingleton<AppTokenProvider>(() {
     // Dedicated plain Dio just for the refresh call.
     // NO interceptors, NO DioClient wrapper → no chance of recursive 401s.
-    final refreshDio = Dio(
-      BaseOptions(baseUrl: sl<ApiEnvironment>().baseUrl),
-    );
+    final refreshDio = Dio(BaseOptions(baseUrl: sl<ApiEnvironment>().baseUrl));
 
     return AppTokenProvider(
       storage: sl<StorageService>(),
@@ -66,7 +79,7 @@ Future<void> initDependencies() async {
 
   // 6. ApiClient — one Dio, shared across features
   sl.registerLazySingleton<ApiClient>(
-        () => DioClient(
+    () => DioClient(
       environment: sl<ApiEnvironment>(),
       tokenProvider: sl<TokenProvider>(),
       additionalInterceptors: [
@@ -88,18 +101,18 @@ Future<void> initDependencies() async {
 
 void _initAuth() {
   sl.registerLazySingleton<AuthLocalDataSource>(
-        () => AuthLocalDataSourceImpl(
+    () => AuthLocalDataSourceImpl(
       storage: sl<StorageService>(),
       tokenProvider: sl<AppTokenProvider>(),
     ),
   );
 
   sl.registerLazySingleton<AuthRemoteDataSource>(
-        () => AuthRemoteDataSourceImpl(client: sl<ApiClient>()),
+    () => AuthRemoteDataSourceImpl(client: sl<ApiClient>()),
   );
 
   sl.registerLazySingleton<AuthRepository>(
-        () => AuthRepositoryImpl(
+    () => AuthRepositoryImpl(
       remoteDataSource: sl(),
       localDataSource: sl(),
       networkInfo: sl(),
@@ -112,7 +125,7 @@ void _initAuth() {
   sl.registerLazySingleton(() => GetCurrentUser(sl()));
 
   sl.registerFactory(
-        () => AuthCubit(
+    () => AuthCubit(
       loginUser: sl(),
       registerUser: sl(),
       logoutUser: sl(),

@@ -1,7 +1,6 @@
 import 'package:core/core_package.dart';
 import '../models/user_model.dart';
 
-// ── Auth endpoints — implements EndpointProvider ──────────────────────────────
 
 class AuthEndpoints implements EndpointProvider {
   @override final String path;
@@ -109,7 +108,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     return response.when(
       success: (data) => data,
-      failure: throwApiException,
+      failure: (error, message) => throwApiException(error, message),
     );
   }
 
@@ -134,7 +133,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     return response.when(
       success: (data) => data,
-      failure: throwApiException,
+      failure: (error, message) => throwApiException(error, message),
     );
   }
 
@@ -150,7 +149,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     response.when(
       success: (_) {},
-      failure: throwApiException,
+      failure: (error, message) => throwApiException(error, message),
     );
   }
 }
